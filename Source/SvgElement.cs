@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -556,29 +556,30 @@ namespace Svg
                 if (attr.Property.Converter.CanConvertTo(typeof(string)) && 
                     (!attr.Attribute.InAttributeDictionary || _attributes.ContainsKey(attr.Attribute.Name)))
                 {
-                    object propertyValue = attr.Property.GetValue(this);
-                    string value = (string)attr.Property.Converter.ConvertTo(propertyValue, typeof(string));
-
-                    forceWrite = false;
                     writeStyle = (attr.Attribute.Name == "fill");
-
-                    if (writeStyle && (Parent != null))
+                    object propertyValue = attr.Property.GetValue(this);
+                    if(propertyValue!=null)
                     {
-                    	if(propertyValue == SvgColourServer.NotSet) continue;
-                    	
-                        object parentValue;
-                        if (TryResolveParentAttributeValue(attr.Attribute.Name, out parentValue))
+                        string value = (string)attr.Property.Converter.ConvertTo(propertyValue, typeof(string));
+
+                        forceWrite = false;
+                        
+
+                        if (writeStyle && (Parent != null))
                         {
-                            if ((parentValue == propertyValue) 
-                                || ((parentValue != null) &&  parentValue.Equals(propertyValue)))
-                                continue;
-                            
-                            forceWrite = true;
-                        }
-                    }
+                            if (propertyValue == SvgColourServer.NotSet) continue;
 
-                    if (propertyValue != null)
-                    {
+                            object parentValue;
+                            if (TryResolveParentAttributeValue(attr.Attribute.Name, out parentValue))
+                            {
+                                if ((parentValue == propertyValue)
+                                    || ((parentValue != null) && parentValue.Equals(propertyValue)))
+                                    continue;
+
+                                forceWrite = true;
+                            }
+                        }
+
                         var type = propertyValue.GetType();
                         
                         //Only write the attribute's value if it is not the default value, not null/empty, or we're forcing the write.
@@ -598,11 +599,11 @@ namespace Svg
                     {
                         if (writeStyle)
                         {
-                            styles[attr.Attribute.Name] = value;
+                            styles[attr.Attribute.Name] = "none";
                         }
                         else
                         {
-                            writer.WriteAttributeString(attr.Attribute.NamespaceAndName, value);
+                            writer.WriteAttributeString(attr.Attribute.NamespaceAndName, "none");
                         }
                     }
                 }
